@@ -84,10 +84,31 @@ input, button{
 .chatArea {
   height: 100%;
   padding-bottom: 60px;
+  background-color: #404040;
+  color: white;
 }
 
 .user-identification {
   height: 5vh;
+  font-weight: bold;
+  padding: 10px 10px 10px 10px;
+  background-color: #242323;
+  color: white;
+  word-wrap: break-word;
+}
+
+.userList {
+  background-color: #242323;
+  color: white;
+}
+
+.online-text {
+  color: white;
+  font-weight: bold;
+  font-size: 130%;
+  padding: 10px 0 0 20px;
+  text-align: left;
+  word-wrap: break-word;
 }
 
 .messages {
@@ -100,12 +121,12 @@ input, button{
 .message-mine {
   font-weight: bold;
   border-radius: 10%;
-  padding: 10px 10px 10px 10px;
+  padding: 5px 5px 5px 5px;
 }
 
 .message-theirs {
   border-radius: 10%;
-  padding: 10px 10px 10px 10px;
+  padding: 5px 5px 5px 5px;
 }
 
 .username {
@@ -129,7 +150,7 @@ input, button{
 /* Input */
 
 .inputMessage {
-  border: 10px solid #000;
+  /* border: 10px solid #000; */
   bottom: 0; 
   height: 8vh;
   left: 0;
@@ -138,6 +159,8 @@ input, button{
   position: absolute;
   right: 0;
   width: 100%;
+  background-color: #242323;
+  color: white;
 }
 
 /* button {
