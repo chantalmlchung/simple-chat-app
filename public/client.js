@@ -46,7 +46,7 @@ $(function() {
 
     // Change the client's username
     function changeUsername (name) {
-      if (usernames.includes(name)) {
+      if (usernames.includes(name.trim())) {
         log('Failed to change username. Already exists.');
         return;
       }
@@ -76,7 +76,7 @@ $(function() {
         // Check if cookie exists for the user
         name = getCookie('username');
         console.log(name);
-        if (name != "" && !usernames.includes(name)) {
+        if (name != "" && !usernames.includes(name.trim())) {
           username = name;
           color = getCookie('color');
           if (color != ""){
@@ -267,7 +267,7 @@ $(function() {
     // Receive rnadom username from server
     socket.on('generate username', (name) => {
       // Generate new name until unique name obtained
-      while (usernames.includes(name)) {
+      while (usernames.includes(name.trim())) {
         getUsername();
       }
       username = name;
@@ -284,7 +284,7 @@ $(function() {
     socket.on('all users', (users) => {
       names = Object.keys(users);
       for (name of names) {
-        if (usernames.includes(name)) {
+        if (usernames.includes(name.trim())) {
           continue;
         }
         usernames.push(name);
