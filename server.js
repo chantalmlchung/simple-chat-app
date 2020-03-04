@@ -1,4 +1,3 @@
-// Setup basic express server
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -12,8 +11,6 @@ server.listen(port, function () {
 
 // Routing
 app.use(express.static(__dirname + '/public'));
-
-// Chatroom
 
 // usernames which are currently connected to the chat
 var usernames = {};
@@ -33,19 +30,37 @@ io.on('connection', function (socket) {
 		socket.emit('generate username', socket.username);
 		socket.broadcast.emit('user joined', socket.username);
 	});
-
+	
+	// Set username color
 	socket.on('set user color', (color) => {
 		usernames[socket.username] = color;
-	})
+	});
+
+	// Change username color
+	socket.on('change user color', (data) => {
+		usernames[data.username] = data.color;
+	});
 	
+	// Get all users currently connected
 	socket.on('get users', () => {
 		socket.emit('all users', usernames);
 	});
 
-	// send client chat message history
+	// Send client chat message history
 	socket.on('get chat history', () => {
 		socket.emit('chat history', message_list);
 	})
+
+	// Update user chat colors
+	socket.on('update chat colors', (data) => {
+		for (message of message_list) {
+			if (message.username === data.username) {
+				message.color = data.color;
+			}
+		}
+		socket.emit('chat history', message_list);
+		socket.broadcast.emit('chat history', message_list);
+	});
 
 	// Update chat when user changes their name
 	socket.on('update chat names', (data) => {
@@ -58,8 +73,8 @@ io.on('connection', function (socket) {
 		socket.broadcast.emit('chat history', message_list);
 	});
 
-	// when the client emits 'new message', this listens and executes
-	socket.on('new message', function (data) {
+	// Send new message from user to all connected users
+	socket.on('new message', (data) => {
 		let timestamp = new Date().getTime();
 		// we tell the client to execute 'new message'
 		socket.broadcast.emit('new message', {
@@ -86,7 +101,7 @@ io.on('connection', function (socket) {
 		});
 	});
 
-	// when the client emits 'add user', this listens and executes
+	// Send updated user list to all connected clients
 	socket.on('new username', (username) => {
 		// Set old username to the new username
 		old_username = socket.username;
@@ -101,7 +116,7 @@ io.on('connection', function (socket) {
 		});
 	});
 
-	// when the user disconnects.. perform this
+	// Let all connected users know that a user has left
 	socket.on('disconnect', function () {
 		// remove the username from global usernames list
 		if (addedUser) {

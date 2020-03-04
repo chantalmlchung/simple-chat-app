@@ -13,18 +13,16 @@ $(function() {
     var $inputMessage = $('.inputMessage'); // Input message input box
     var $userList = $('.users');
     var $userIdentity = $('.user-identification');
-  
     var $chatPage = $('.chat.page'); // The chatroom page
-  
     var username;
     var usernameColor;
     var connected = false;
     var $currentInput = $inputMessage.focus();
     var usernames = [];
-  
+
     var socket = io();
     
-    // Sets the client's username
+    // Change the client's username
     function changeUsername (name) {
       if (usernames.includes(name)) {
         log('Failed to change username. Already exists.');
@@ -35,7 +33,7 @@ $(function() {
       socket.emit('new username', new_name);
       socket.emit('update chat names', {
         old_username: username,
-        new_username: name
+        new_username: new_name
       });
     }
 
@@ -67,7 +65,19 @@ $(function() {
       message = cleanInput(message);
       // if there is a non-empty message and a socket connection
       if (message && connected) {
-        if (message.includes('/nick')) {
+        if (message.includes('/nickcolor')) {
+          new_color = message.slice('/nickcolor'.length, message.length);
+          usernameColor = '#' + new_color.trim();
+          socket.emit('change user color', {
+            username: username,
+            color: usernameColor
+          });
+          socket.emit('update chat colors', {
+            username: username,
+            color: usernameColor
+          });
+        }
+        else if (message.includes('/nick')) {
           old_username = username;
           new_name = message.slice('/nick'.length, message.length);
           changeUsername(new_name);
@@ -85,6 +95,7 @@ $(function() {
       addMessageElement($el, options);
     }
 
+    // Convert ms to HH:MM
     function msToTime(ms) {
       var date = new Date(ms);
       let hours = date.getHours();
@@ -99,8 +110,6 @@ $(function() {
       return hours + ":" + minutes;
     }
 
-    // Add 
-  
     // Adds the visual chat message to the message list
     function addChatMessage (data, options) {
       // options = options || {};
@@ -121,10 +130,6 @@ $(function() {
     }
   
     // Adds a message element to the messages and scrolls to the bottom
-    // el - The element to add as a message
-    // options.fade - If the element should fade-in (default = true)
-    // options.prepend - If the element should prepend
-    //   all other messages (default = false)
     function addMessageElement (el, options) {
       var $el = $(el);
   
@@ -154,11 +159,13 @@ $(function() {
   
     // Prevents input from having injected markup
     function cleanInput (input) {
+      input = input.toString().trim();
       return $('<div/>').text(input).text();
     }
   
-    // Gets the color of a username through our hash function
+    // Gets the color of a username through a hash function
     function getUsernameColor (user, color=null) {
+      // If the user already has a color, return the color
       if (color) {
         return color;
       }
@@ -192,26 +199,25 @@ $(function() {
     }
   
     // Keyboard events
-  
-    $window.keydown(function (event) {
+    $window.keydown((event) => {
       // Auto-focus the current input when a key is typed
       if (!(event.ctrlKey || event.metaKey || event.altKey)) {
         $currentInput.focus();
       }
-      // When the client hits ENTER on their keyboard
+      // When ENTER button pressed
       if (event.which === 13) {
           sendMessage();
       }
     });
   
     // Click events
-  
     // Focus input when clicking on the message input's border
-    $inputMessage.click(function () {
+    $inputMessage.click (() => {
       $inputMessage.focus();
     });
   
     // Socket events
+    // Receive rnadom username from server
     socket.on('generate username', (name) => {
       // Generate new name until unique name obtained
       while (usernames.includes(name)) {
@@ -224,6 +230,7 @@ $(function() {
       $userIdentity.html('Your Identity is: ' + username);
     });
 
+    // Receive all users from server
     socket.on('all users', (users) => {
       names = Object.keys(users);
       for (name of names) {
@@ -232,15 +239,15 @@ $(function() {
         }
         usernames.push(name);
       }
-      // Clear existing html list
+      // Clear existing user list
       $userList.empty();
       for (name of usernames) {
         $userList.append('<li>' + name + '</li>');
       }
     });
 
-    // Whenever the server emits 'login', log the login message
-    socket.on('new user list', function (users) {
+    // Receive new user list from server
+    socket.on('new user list', (users) => {
       names = Object.keys(users);
       usernames = new Array();
       $userList.empty();
@@ -250,8 +257,8 @@ $(function() {
       }
     });
 
+    // Receive new user list from server
     socket.on('new list - sender', (data) => {
-      console.log(data.user_list);
       names = Object.keys(data.user_list);
       username = data.username;
       usernames = new Array();
@@ -263,8 +270,8 @@ $(function() {
       }
     });
   
-    // Whenever the server emits 'new message', update the chat body
-    socket.on('new message', function (data) {
+    // Update chat body when new message received from server
+    socket.on('new message', (data) => {
       if (data.username === username) {
         addChatMessage(data, {
           message: 'message-mine',
@@ -284,7 +291,7 @@ $(function() {
       // Clear chat history first
       $messages.empty();
       for (message of message_list) {
-        if (message.username === username) {
+        if (message.username.trim() === username) {
           addChatMessage(message, {
             message: 'message-mine',
             allign: 'li-mine'
@@ -299,14 +306,14 @@ $(function() {
       }
     });
   
-    // Whenever the server emits 'user joined', log it in the chat body
-    socket.on('user joined', function (name) {
+    // Log user joined events from server
+    socket.on('user joined', (name) => {
       log(name + ' joined');
       addUserToList(name)
     });
   
-    // Whenever the server emits 'user left', log it in the chat body
-    socket.on('user left', function (name) {
+    // Log user left events from server
+    socket.on('user left', (name) => {
       log(name + ' left');
       removeUserFromList(name);
     });
