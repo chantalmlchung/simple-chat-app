@@ -35,10 +35,6 @@ li {
   padding-top: 20px;
 }
 
-svg {
-  fill: white;
-}
-
 /* Pages */
 
 .pages {
@@ -89,7 +85,7 @@ svg {
 }
 
 .user-identification {
-  height: 8vh;
+  height: 5vh;
   font-weight: bold;
   padding: 10px 10px 10px 10px;
   background-color: #242323;
@@ -112,7 +108,7 @@ svg {
 }
 
 .messages {
-  height: 84vh;
+  height: 87vh;
   margin: 0;
   overflow: auto;
   padding: 10px 20px 10px 20px;
