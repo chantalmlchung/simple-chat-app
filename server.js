@@ -31,6 +31,14 @@ io.on('connection', function (socket) {
 		socket.broadcast.emit('user joined', socket.username);
 	});
 	
+	// Returning user
+	socket.on('returning user', (data) => {
+		socket.username = data.username;
+		usernames[socket.username] = data.color;
+		addedUser = true;
+		socket.broadcast.emit('user joined', socket.username);
+	});
+
 	// Set username color
 	socket.on('set user color', (color) => {
 		usernames[socket.username] = color;

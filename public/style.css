@@ -98,14 +98,12 @@ input, button{
 }
 
 .message-mine {
-  background-color: lightblue;
+  font-weight: bold;
   border-radius: 10%;
   padding: 10px 10px 10px 10px;
-  text-align: right;
 }
 
 .message-theirs {
-  background-color: pink;
   border-radius: 10%;
   padding: 10px 10px 10px 10px;
 }

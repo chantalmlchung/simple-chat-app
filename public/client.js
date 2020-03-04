@@ -1,6 +1,5 @@
 $(function() {
-    var FADE_TIME = 150; // ms
-    var TYPING_TIMER_LENGTH = 400; // ms
+    var FADE_TIME = 150;
     var COLORS = [
       '#e21400', '#91580f', '#f8a700', '#f78b00',
       '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
@@ -22,6 +21,29 @@ $(function() {
 
     var socket = io();
     
+
+    // Cookies
+    // Set cookie
+    function setCookie(field, value) {
+      document.cookie = field + "=" + value + ";max-age=3600";
+    }
+    // Get cookie
+    function getCookie(field) {
+      var name = field + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
     // Change the client's username
     function changeUsername (name) {
       if (usernames.includes(name)) {
@@ -51,7 +73,28 @@ $(function() {
 
     // Get a random username
     function getUsername() {
-        socket.emit('get username');
+        // Check if cookie exists for the user
+        name = getCookie('username');
+        console.log(name);
+        if (name != "" && !usernames.includes(name)) {
+          username = name;
+          color = getCookie('color');
+          if (color != ""){
+            usernameColor = color;
+          }
+          else {
+            usernameColor = getUsernameColor(username);
+          }
+          socket.emit('returning user', {
+            username: username,
+            color: usernameColor
+          });
+          addUserToList(username);
+          $userIdentity.html('Your Identity is: ' + username);
+        }
+        else {
+          socket.emit('get username');
+        }
         connected = true;
         $chatPage.show();
     }
@@ -76,6 +119,7 @@ $(function() {
             username: username,
             color: usernameColor
           });
+          setCookie('color', usernameColor);
         }
         else if (message.includes('/nick')) {
           old_username = username;
@@ -228,6 +272,8 @@ $(function() {
       socket.emit('set user color', usernameColor);
       addUserToList(username);
       $userIdentity.html('Your Identity is: ' + username);
+      setCookie('username', username);
+      setCookie('color', usernameColor);
     });
 
     // Receive all users from server
@@ -268,6 +314,7 @@ $(function() {
         usernames.push(name);
         $userList.append('<li>' + name + '</li>');
       }
+      setCookie('username', username);
     });
   
     // Update chat body when new message received from server
