@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket.IO Chat Example</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="pages">
+    <div class="chat page">
+        <div class="user-identification"></div>
+        <div class="grid-container">
+            <div class="chatArea">
+                <ul class="messages"></ul>
+            </div>
+            <div class="userList">
+                <ul class="users"></ul>
+            </div>
+        </div>
+      <span>
+        <input class="inputMessage" placeholder="Type here..."/>
+        <!-- <button><img src="https://image.flaticon.com/icons/svg/60/60525.svg"></button> -->
+      </span>
+
+      <!-- <form class="form-inline" action="">
+        <input class="inputMessage" placeholder="Type here...">
+        <button type="submit">Submit</button>
+      </form> -->
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

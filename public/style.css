@@ -1,0 +1,154 @@
+/* Fix user-agent */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, input {
+  font-family:
+    "HelveticaNeue-Light",
+    "Helvetica Neue Light",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    "Lucida Grande",
+    sans-serif;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+  word-wrap: break-word;
+}
+
+li {
+  padding-top: 20px;
+}
+/* 
+input, button{
+  vertical-align: middle;
+} */
+
+/* Pages */
+
+.pages {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.page {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Chat page */
+
+.chat.page {
+  display: none;
+}
+
+/* Font */
+
+.messages {
+  font-size: 150%;
+}
+
+.inputMessage {
+  font-size: 100%;
+}
+
+.log {
+  color: gray;
+  font-size: 70%;
+  margin: 5px;
+  text-align: center;
+}
+
+/* Messages */
+
+.chatArea {
+  height: 100%;
+  padding-bottom: 60px;
+}
+
+.user-identification {
+  height: 5vh;
+}
+
+.messages {
+  height: 87vh;
+  margin: 0;
+  overflow: auto;
+  padding: 10px 20px 10px 20px;
+}
+
+.message-mine {
+  background-color: lightblue;
+  border-radius: 10%;
+  padding: 10px 10px 10px 10px;
+  text-align: right;
+}
+
+.message-theirs {
+  background-color: pink;
+  border-radius: 10%;
+  padding: 10px 10px 10px 10px;
+}
+
+.username {
+  float: left;
+  font-weight: 700;
+  overflow: hidden;
+  padding-right: 15px;
+  text-align: right;
+  font-size: 90%;
+}
+
+.timestamp {
+  float: left;
+  font-weight: 300;
+  color: gray;
+  font-size: 30%;
+  overflow: hidden;
+  padding-right: 15px;
+}
+
+/* Input */
+
+.inputMessage {
+  border: 10px solid #000;
+  bottom: 0; 
+  height: 8vh;
+  left: 0;
+  outline: none;
+  padding-left: 10px;
+  position: absolute;
+  right: 0;
+  width: 100%;
+}
+
+/* button {
+  height: 8vh;
+  width: 20%;
+} */
+
+/* Columns */
+.grid-container {
+  display: grid;
+  grid-template-columns: 80% 20%;
+}
