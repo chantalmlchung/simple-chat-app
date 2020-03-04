@@ -11,7 +11,7 @@ $(function() {
     var $messages = $('.messages'); // Messages area
     var $inputMessage = $('.inputMessage'); // Input message input box
     var $userList = $('.users');
-    var $userIdentity = $('.user-identification');
+    var $userID = $('.userID');
     var $chatPage = $('.chat.page'); // The chatroom page
     var username;
     var usernameColor;
@@ -90,7 +90,8 @@ $(function() {
             color: usernameColor
           });
           addUserToList(username);
-          $userIdentity.html('Your Identity is: ' + username);
+          $userID.empty();
+          $userID.text(username).css('color', usernameColor);
         }
         else {
           socket.emit('get username');
@@ -120,6 +121,8 @@ $(function() {
             color: usernameColor
           });
           setCookie('color', usernameColor);
+          $userID.empty();
+          $userID.text(username).css('color', usernameColor);
         }
         else if (message.includes('/nick')) {
           old_username = username;
@@ -271,7 +274,8 @@ $(function() {
       usernameColor = getUsernameColor(username);
       socket.emit('set user color', usernameColor);
       addUserToList(username);
-      $userIdentity.html('Your Identity is: ' + username);
+      $userID.empty();
+      $userID.text(username).css('color', usernameColor);
       setCookie('username', username);
       setCookie('color', usernameColor);
     });
@@ -308,7 +312,8 @@ $(function() {
       names = Object.keys(data.user_list);
       username = data.username;
       usernames = new Array();
-      $userIdentity.html('Your Identity is: ' + username);
+      $userID.empty();
+      $userID.text(username).css('color', usernameColor);
       $userList.empty();
       for (name of names) {
         usernames.push(name);

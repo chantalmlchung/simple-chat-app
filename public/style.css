@@ -34,10 +34,10 @@ ul {
 li {
   padding-top: 20px;
 }
-/* 
-input, button{
-  vertical-align: middle;
-} */
+
+svg {
+  fill: white;
+}
 
 /* Pages */
 
@@ -89,7 +89,7 @@ input, button{
 }
 
 .user-identification {
-  height: 5vh;
+  height: 8vh;
   font-weight: bold;
   padding: 10px 10px 10px 10px;
   background-color: #242323;
@@ -112,7 +112,7 @@ input, button{
 }
 
 .messages {
-  height: 87vh;
+  height: 84vh;
   margin: 0;
   overflow: auto;
   padding: 10px 20px 10px 20px;
