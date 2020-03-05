@@ -32,7 +32,7 @@ $(function() {
       var name = field + "=";
       var decodedCookie = decodeURIComponent(document.cookie);
       var ca = decodedCookie.split(';');
-      for(var i = 0; i <ca.length; i++) {
+      for(var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ') {
           c = c.substring(1);
@@ -55,7 +55,8 @@ $(function() {
       socket.emit('new username', new_name);
       socket.emit('update chat names', {
         old_username: username,
-        new_username: new_name
+        new_username: new_name,
+        color: usernameColor
       });
     }
 
@@ -71,35 +72,53 @@ $(function() {
     }
     getChatHistory();
 
-    // Get a random username
-    function getUsername() {
-        // Check if cookie exists for the user
-        name = getCookie('username');
-        console.log(name);
-        if (name != "" && !usernames.includes(name.trim())) {
-          username = name;
-          color = getCookie('color');
-          if (color != ""){
-            usernameColor = color;
-          }
-          else {
-            usernameColor = getUsernameColor(username);
-          }
-          socket.emit('returning user', {
-            username: username,
-            color: usernameColor
-          });
-          addUserToList(username);
-          $userID.empty();
-          $userID.text(username).css('color', usernameColor);
-        }
-        else {
-          socket.emit('get username');
-        }
-        connected = true;
-        $chatPage.show();
+    function checkUsername() {
+      name = getCookie('username');
+      if (name !== "") {
+        socket.emit("check username", name.trim());
+      }
+      else {
+        socket.emit('get username');
+      }
+      connected = true;
+      $chatPage.show();
     }
-    getUsername();
+    checkUsername();
+
+
+    // Get a random username or use existing one if cookie exists
+    // function getUsername() {
+        // Check if cookie exists for the user
+        // name = getCookie('username');
+        // if (name !== "") {
+        //   if (!usernames.includes(name.trim())) {
+        //     username = name;
+        //   }
+        //   else {
+        //     socket.emit('get username');
+        //   }
+        //   color = getCookie('color');
+        //   if (color !== ""){
+        //     usernameColor = color;
+        //   }
+        //   else {
+        //     usernameColor = getUsernameColor(username);
+        //   }
+        //   socket.emit('returning user', {
+        //     username: username,
+        //     color: usernameColor
+        //   });
+        //   addUserToList(username);
+        //   $userID.empty();
+        //   $userID.text(username).css('color', usernameColor);
+        // }
+        // else {
+        // socket.emit('get username');
+        // }
+    //     connected = true;
+    //     $chatPage.show();
+    // }
+    // getUsername();
   
     // Sends a chat message
     function sendMessage () {
@@ -110,8 +129,15 @@ $(function() {
       // if there is a non-empty message and a socket connection
       if (message && connected) {
         if (message.includes('/nickcolor')) {
-          new_color = message.slice('/nickcolor'.length, message.length);
-          usernameColor = '#' + new_color.trim();
+          let new_color = message.slice('/nickcolor'.length, message.length);
+          // Check for valid username color
+          let hex_val = '#' + new_color.trim();
+          let re = /^#[0-9A-Fa-f]{6}$/i;
+          if (!re.test(hex_val)) {
+            log('Invalid hex color. Please try again.')
+            return;
+          }
+          usernameColor = hex_val;
           socket.emit('change user color', {
             username: username,
             color: usernameColor
@@ -129,9 +155,16 @@ $(function() {
           new_name = message.slice('/nick'.length, message.length);
           changeUsername(new_name);
         }
+        else if (message.includes('/')) {
+          log('Bad command. Please try again.');
+        }
         else {
           // tell server to execute 'new message' and send along one parameter
-          socket.emit('new message', message);
+          socket.emit('new message', {
+            username: username,
+            color: usernameColor,
+            data: message
+          });
         }
       }
     }
@@ -280,6 +313,24 @@ $(function() {
       setCookie('color', usernameColor);
     });
 
+    socket.on('set name', (name) => {
+      username = name;
+      color = getCookie('color');
+      if (color !== ""){
+        usernameColor = color;
+      }
+      else {
+        usernameColor = getUsernameColor(username);
+      }
+      socket.emit('returning user', {
+        username: username,
+        color: usernameColor
+      });
+      addUserToList(username);
+      $userID.empty();
+      $userID.text(username).css('color', usernameColor);
+    });
+
     // Receive all users from server
     socket.on('all users', (users) => {
       names = Object.keys(users);
@@ -324,7 +375,7 @@ $(function() {
   
     // Update chat body when new message received from server
     socket.on('new message', (data) => {
-      if (data.username === username) {
+      if (data.username === username && data.color === usernameColor) {
         addChatMessage(data, {
           message: 'message-mine',
           allign: 'li-mine'
@@ -343,7 +394,7 @@ $(function() {
       // Clear chat history first
       $messages.empty();
       for (message of message_list) {
-        if (message.username.trim() === username) {
+        if (message.username.trim() === username && message.color === usernameColor) {
           addChatMessage(message, {
             message: 'message-mine',
             allign: 'li-mine'

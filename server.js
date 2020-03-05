@@ -16,16 +16,21 @@ app.use(express.static(__dirname + '/public'));
 var usernames = {};
 var message_list = [];
 
+function generateUsername() {
+	let username = uniqueNamesGenerator({
+		dictionaries: [animals],
+		length: 1
+	});
+	username = 'Anonymous ' + username.charAt(0).toUpperCase() + username.substring(1);
+	return username;
+}
+
+
 io.on('connection', function (socket) {
   	var addedUser = false;
 	// Generate name for user
 	socket.on('get username', () => {
-		let username = uniqueNamesGenerator({
-			dictionaries: [animals],
-			length: 1
-		});
-		username = 'Anonymous ' + username.charAt(0).toUpperCase() + username.substring(1);
-		socket.username = username;
+		socket.username = generateUsername();
 		addedUser = true;
 		socket.emit('generate username', socket.username);
 		socket.broadcast.emit('user joined', socket.username);
@@ -37,6 +42,16 @@ io.on('connection', function (socket) {
 		usernames[socket.username] = data.color;
 		addedUser = true;
 		socket.broadcast.emit('user joined', socket.username);
+	});
+
+	socket.on('check username', (name) => {
+		if (name in usernames) {
+			new_name = generateUsername();
+			socket.emit('set name', new_name);
+		}
+		else {
+			socket.emit('set name', name);
+		}
 	});
 
 	// Set username color
@@ -62,7 +77,7 @@ io.on('connection', function (socket) {
 	// Update user chat colors
 	socket.on('update chat colors', (data) => {
 		for (message of message_list) {
-			if (message.username === data.username) {
+			if (message.username.trim() === data.username.trim()) {
 				message.color = data.color;
 			}
 		}
@@ -75,6 +90,7 @@ io.on('connection', function (socket) {
 		for (message of message_list) {
 			if (message.username === data.old_username) {
 				message.username = data.new_username;
+				message.color = data.color;
 			}
 		}
 		socket.emit('chat history', message_list);
@@ -86,15 +102,15 @@ io.on('connection', function (socket) {
 		let timestamp = new Date().getTime();
 		// we tell the client to execute 'new message'
 		socket.broadcast.emit('new message', {
-			username: socket.username,
-			color: usernames[socket.username],
-			message: data,
+			username: data.username,
+			color: data.color,
+			message: data.data,
 			timestamp: timestamp
 		});
 		socket.emit('new message', {
-			username: socket.username,
-			color: usernames[socket.username],
-			message: data,
+			username: data.username,
+			color: data.color,
+			message: data.data,
 			timestamp: timestamp
 		});
 		if (message_list.length === 200) {
@@ -102,9 +118,9 @@ io.on('connection', function (socket) {
 			message_list.shift();
 		}
 		message_list.push({
-			username: socket.username,
-			color: usernames[socket.username],
-			message: data,
+			username: data.username,
+			color: data.usernameColor,
+			message: data.data,
 			timestamp: timestamp
 		});
 	});
@@ -128,9 +144,9 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		// remove the username from global usernames list
 		if (addedUser) {
+			delete usernames[socket.username];
 			// echo globally that this client has left
 			socket.broadcast.emit('user left', socket.username);
-			delete usernames[socket.username];
 		}
 	});
 });
