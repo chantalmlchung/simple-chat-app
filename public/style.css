@@ -146,7 +146,6 @@ li {
 /* Input */
 
 .inputMessage {
-  /* border: 10px solid #000; */
   bottom: 0; 
   height: 8vh;
   left: 0;
@@ -158,11 +157,6 @@ li {
   background-color: #242323;
   color: white;
 }
-
-/* button {
-  height: 8vh;
-  width: 20%;
-} */
 
 /* Columns */
 .grid-container {

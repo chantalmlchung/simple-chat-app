@@ -16,6 +16,7 @@ app.use(express.static(__dirname + '/public'));
 var usernames = {};
 var message_list = [];
 
+// Generate a random username for a user
 function generateUsername() {
 	let username = uniqueNamesGenerator({
 		dictionaries: [animals],

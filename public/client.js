@@ -84,41 +84,6 @@ $(function() {
       $chatPage.show();
     }
     checkUsername();
-
-
-    // Get a random username or use existing one if cookie exists
-    // function getUsername() {
-        // Check if cookie exists for the user
-        // name = getCookie('username');
-        // if (name !== "") {
-        //   if (!usernames.includes(name.trim())) {
-        //     username = name;
-        //   }
-        //   else {
-        //     socket.emit('get username');
-        //   }
-        //   color = getCookie('color');
-        //   if (color !== ""){
-        //     usernameColor = color;
-        //   }
-        //   else {
-        //     usernameColor = getUsernameColor(username);
-        //   }
-        //   socket.emit('returning user', {
-        //     username: username,
-        //     color: usernameColor
-        //   });
-        //   addUserToList(username);
-        //   $userID.empty();
-        //   $userID.text(username).css('color', usernameColor);
-        // }
-        // else {
-        // socket.emit('get username');
-        // }
-    //     connected = true;
-    //     $chatPage.show();
-    // }
-    // getUsername();
   
     // Sends a chat message
     function sendMessage () {
@@ -128,7 +93,7 @@ $(function() {
       message = cleanInput(message);
       // if there is a non-empty message and a socket connection
       if (message && connected) {
-        if (message.includes('/nickcolor')) {
+        if (message.includes('/nickcolor ')) {
           let new_color = message.slice('/nickcolor'.length, message.length);
           // Check for valid username color
           let hex_val = '#' + new_color.trim();
@@ -150,7 +115,7 @@ $(function() {
           $userID.empty();
           $userID.text(username).css('color', usernameColor);
         }
-        else if (message.includes('/nick')) {
+        else if (message.includes('/nick ')) {
           old_username = username;
           new_name = message.slice('/nick'.length, message.length);
           changeUsername(new_name);
@@ -192,8 +157,6 @@ $(function() {
 
     // Adds the visual chat message to the message list
     function addChatMessage (data, options) {
-      // options = options || {};
-
       var $timeDiv = $('<br><span class="timestamp"/>')
         .text(msToTime(data.timestamp));
       var $usernameDiv = $('<span class="username"/>')
