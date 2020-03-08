@@ -135,9 +135,9 @@ $(function() {
     }
   
     // Log a message
-    function log (message, options) {
+    function log (message) {
       var $el = $('<li>').addClass('log').text(message);
-      addMessageElement($el, options);
+      addMessageElement($el);
     }
 
     // Convert ms to HH:MM
@@ -169,33 +169,13 @@ $(function() {
         .data('username', data.username)
         .append($usernameDiv, $messageBodyDiv, $timeDiv);
       
-      addMessageElement($messageDiv, options);
+      addMessageElement($messageDiv);
     }
   
     // Adds a message element to the messages and scrolls to the bottom
-    function addMessageElement (el, options) {
+    function addMessageElement (el) {
       var $el = $(el);
-  
-      // Setup default options
-      if (!options) {
-        options = {};
-      }
-      if (typeof options.fade === 'undefined') {
-        options.fade = true;
-      }
-      if (typeof options.prepend === 'undefined') {
-        options.prepend = false;
-      }
-  
-      // Apply options
-      if (options.fade) {
-        $el.hide().fadeIn(FADE_TIME);
-      }
-      if (options.prepend) {
-        $messages.prepend($el);
-      } else {
-        $messages.append($el);
-      }
+      $messages.append($el);
       // Automatically scroll to last message
       $messages[0].scrollTop = $messages[0].scrollHeight;
     }
